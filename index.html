@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
   <!-- TODO -->
 	<title>DIAMETER: RADIUS 2.0</title>
-	<meta name="description" content="A Real-Time Reachability-based Motion Planning Algorithm for Risk-Aware Motion Planning in Uncertain Environments.">
+	<meta name="description" content="A Dynamic, Real-Time, Reachability-based Motion Planning Algorithm for Risk-Aware Motion Planning in Uncertain Environments.">
     <style>
         .title{
 	    font-family: Arial, Helvetica, sans-serif;
@@ -106,6 +106,24 @@
         .c1{
             color:#303030
         }
+        table {
+            padding-right:25pt;
+            padding-left:25pt;
+            margin-left:auto;
+            margin-right:auto;
+            max-width:940px;
+            float:center;
+            border-collapse: collapse;
+            width: 95%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body style="background-color:#ffffff;">
@@ -156,8 +174,7 @@
     <!-- Author list -->
     <div class="section">
         <h1 class="title">DIAMETER: RADIUS 2.0</h1>
-        <h1 class="subtitle" style="margin-bottom: 16pt; color: orange">A Real-Time Reachability-based Motion Planning Algorithm for Risk-Aware Motion Planning in Uncertain Environments.</h1>
-        <h1 class="subtitle" style="margin-bottom: 16pt; color: red">RSS 2023</h1>
+        <h1 class="subtitle" style="margin-bottom: 16pt; color: black">A Dynamic, Real-Time, Reachability-based Motion Planning Algorithm for Risk-Aware Motion Planning in Uncertain Environments.</h1>
 
         <div class="row" style="max-width: 1200px; height: 80pt">
             <div class="col" style="width: 25%; line-height: 50pt;">
@@ -176,6 +193,7 @@
         </div>
 
         <!-- Author name-->
+        <!-- TODO who are authors? -->
         <div class="row" style = "max-width: 1200px;">
             <div class="col" style="font-weight: 200; width: 25%">
                 <p>Jinsun Liu*</p>
@@ -184,7 +202,7 @@
                 <p>Challen Enninful Adu*</p>
             </div>
             <div class="col" style="font-weight: 200; width: 25%">
-                <p>Lucas Lymburner*</p>
+                <p>Lucas Lymburner</p>
             </div>
             <div class="col" style="font-weight: 200; width: 25%">
                 <p>Ram Vasudevan</p>
@@ -250,7 +268,7 @@
         -->
 
         <p class="body">
-            <b>RADIUS</b> generates real-time, motion plans that guarantee robot safety up to a given risk threshold in the presence of uncertainty of obstacle motions. 
+            <b>DIAMETER</b> generates real-time, motion plans that guarantee robot safety up to a given risk threshold in the presence of uncertainty of obstacle motions. 
             </p>
     </div>
 
@@ -279,13 +297,11 @@
     <div class="container">
         <h2 class="section_title" style="margin-top: 0pt;">Abstract</h2>
         <p class="body">
-            Deterministic methods for motion planning guarantee safety amidst uncertainty in obstacle locations by trying to restrict the robot from operating in any possible location that an obstacle could be in which is overly conservative. 
-            Chance-constrained optimization can be applied to improve the performance of motion planning algorithms by allowing for a user-specified amount of bounded constraint violation.
-            However, state-of-the-art methods either rely on moment-based inequalities, which can be overly conservative, cannot run in real-time, or make it difficult to satisfy assumptions about the class of probability distributions used to model uncertainty.
-            To address these challenges, this work proposes a real-time, risk-aware reachability based motion planning framework called RADIUS. 
-            RADIUS performs real-time optimization to construct a trajectory that can be followed by the robot in a manner that is certified to have a risk of collision that is less than or equal to a user-specified threshold.
-            This is done without restricting the probability distribution used to model uncertainty to a simple class (e.g., Gaussian). 
-            The proposed algorithm is compared to several state-of-the-art chance-constrained and deterministic methods in simulation, and is shown to consistently outperform them in a variety of driving scenarios and is demonstrated to work on hardware.
+        Safe motion planning for robots in uncertain environments is a critical challenge. Traditional, deterministic motion planning algorithms restrict the robot from intersecting uncertain regions, resulting in overly conservative behavior. Chance-constrained optimization can improve the performance of motion planning algorithms by allowing a user-specified amount of constraint violation. However, state-of-the-art methods rely either on moment-based inequalities, which can be conservative, or make difficult-to-satisfy assumptions about the class of probability distributions used to model uncertainty.
+
+This work proposes a real-time, risk-aware, reachability-based motion planning framework called DIAMETER to address these challenges. The method first generates a reachable set of parameterized trajectories for the robot offline. Then, online, given arbitrary probability distributions estimating the obstacles' locations, DIAMETER computes a closed-form overapproximation of the probability of a collision with any obstacle. Finally, using this overapproximation function as a constraint, DIAMETER optimizes over a set of control parameters to generate a trajectory with a risk of collision bounded above by some user-specified risk of crashing.
+
+The proposed algorithm is implemented and compared to state-of-the-art chance-constrained algorithms and deterministic methods and is shown to outperform them in various driving scenarios.
         </p>
     </div>
 
@@ -296,36 +312,118 @@
             <img src="./web_elements/RADIUS_bigpic.png", width="700pt">
         </div>
         <p class="body">
-            RADIUS first performs offline reachability analysis using a closed-loop full-order vehicle dynamics to construct a series of control-parameterized, zonotope reachable sets (shown as dark gray boxes) that over-approximate all possible behaviors of the ego vehicle over the planning horizon.
-            During online planning, given some user-defined risk of collision (&#1013;) for the motion plan, RADIUS constructs a trajectory by solving an optimization problem that selects subsets of pre-computed zonotope reachable sets that are certified to have a no greater than &#1013; risk of colliding with any obstacles. 
+            DIAMETER, like its predecessor, <a href url="https://roahmlab.github.io/RADIUS/">RADIUS</a>, first performs offline reachability analysis using a closed-loop full-order vehicle dynamics to construct a series of control-parameterized, zonotope reachable sets (shown as dark gray boxes) that over-approximate all possible behaviors of the ego vehicle over the planning horizon.
+            During online planning, given some user-defined risk of collision (&#1013;) for the motion plan, DIAMETER constructs a trajectory by solving an optimization problem that selects subsets of pre-computed zonotope reachable sets that are certified to have a no greater than &#1013; risk of colliding with any obstacles. 
             In the image above, the moving obstacles shown in white and the 3-&sigma; regions of the corresponding probability distributions for the obstacle locations are shown as the purple and blue ellipses where the probability density from low to high is illustrated from blue to purple.
-            The subsets of the dark gray zonotope reachable sets corresponding to the trajectory parameter shown in green ensures a collision-free path that is guaranteed to have a no greater than &#1013; risk of colliding with all obstacles, while the two trajectory parameters and their corresponding reachable sets shown orange may have a greater than &#1013; risk of collision with the moving obstacles.
-            </p>
+            The subsets of the dark gray zonotope reachable sets corresponding to the trajectory parameter shown in green ensure a collision-free path that is guaranteed to have a no greater than &#1013; risk of colliding with all obstacles, while the two trajectory parameters and their corresponding reachable sets shown orange may have a greater than &#1013; risk of collision with the moving obstacles.
+
+        </p>
+
+        <p class="body">
+          <figure>
+            <div style="text-align: center;">
+              <img src="./web_elements/diameter_vs_radius_sample.png", width="900pt"/>
+            </div>
+          </figure>
+        </p>
+
+        <p class="body">
+        The image above shows a comparison between integration grids generated by RADIUS and DIAMETER. 
+        The probability distribution is shown in a cyan-magenta gradient, with magenta representing increased probability mass. The red dashed line represents a bounding region containing at least 99% of the probability mass of the PDF.
+        Simplices included in the integration are shown in green, and excluded simplices are shown in red. 
+        </p>
+
+        <p class="body">
+        RADIUS and DIAMETER both establish a grid of simplices on which the integration will be performed (explained in-depth below). DIAMETER requires that a bounding region containing at least (1 - &delta;) probability mass can be established, and then the simplex grid is established over the intersection region between the bounding box and the zonotope, and in the case of no intersection (e.g. when almost all probability mass is far away from the zonotope), no grid will be generated at all. Because the integration region is only guaranteed to cover (1 - &delta;), the remaining &delta; is added to the final integration results to ensure that it remains an overapproximation. RADIUS, in contrast, generates the grid over the entire zonotope.
+        The error in the integration increases as the size of the simplices increases, and with the amount of area outside of the zonotope (when a green simplex is only partially inside the blue zonotope). Because DIAMETER typically has a smaller grid, with less partial overlap, it yields a tighter approximation to the real integral at the same grid size. 
+
+        </p>
+
+
+
+
         <div style="text-align: center;">
             <img src="./web_elements/overapproximation_fig.png", width="900pt">
         </div>
         <p class="body">
         The key to being able to solve this optimization in real-time is the closed-form over-approximation of the risk of collision, which allows us to provide analytical gradients to the optimization.
-        From left-to-right the process to obtain this closed-form over-approximation is as follows: a) we first represent our risk of collision as an integral of a Probability Density Function (PDF) of the obstacle location over the ego vehicle reachable set;
+        From left-to-right the process to obtain this closed-form over-approximation is as follows: 
+
+        a) we first represent our risk of collision as an integral of a Probability Density Function (PDF) of the obstacle location over the ego vehicle reachable set;
         b) next we generate a grid of simplices to over-approximate the integration domain;
         c) next we over-approximate the PDF using a 2nd order Taylor expansion and interval arithmetic;
         d) with the resulting integral of a quadratic polynomial over a set of simplices we are able to compute a closed-form solution to this integral that tightly over-approximates the actual risk of collision.
         Note that this process is parallelizable and an algorithm for parallelization is provided in the paper.
         </p>
 
-        <p class="body">
-        <font  color="red"> TODO: very rough comparison of grids on single zono case, needs to be much tidier and explained if we keep </font>
-        <div style="text-align: center;">
-          <img src="./web_elements/diam_vs_radius_grid_proto.png", width="900pt"/>
-        </div>
+
         </p>
     </div>
 
     <!-- Results -->
     <div class="container">
         <h2 class="section_title">Results</h2>
+    <p class="body">
+
+    <table>
+    <thead>
+        <tr>
+            <th rowspan="2">Method</th>
+            <th colspan="4">Error</th>
+        </tr>
+        <tr>
+            <th>Gaussian-S (Mean, Max.)</th>
+            <th>Gaussian (Mean, Max.)</th>
+            <th>Beta (Mean, Max.)</th>
+            <th>Bimodal (Mean, Max.)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>DIAMETER</strong></td>
+            <td><strong>(0.0004, 0.0020)</strong></td>
+            <td><strong>(0.0178, 0.5501)</strong></td>
+            <td><strong>(0.0015, 0.0340)</strong></td>
+            <td><strong>(0.0195, 0.6767)</strong></td>
+        </tr>
+        <tr>
+            <td>RADIUS</td>
+            <td>(0.0181, 0.1718)</td>
+            <td>(0.0200, 0.7453)</td>
+            <td><strong>(0.0015, 0.0340)</strong></td>
+            <td>(0.0199, 0.8831)</td>
+        </tr>
+        <tr>
+            <td>Cantelli</td>
+            <td>(0.7766, 0.9988)</td>
+            <td>(0.5501, 0.9991)</td>
+            <td>(0.3981, 0.9612)</td>
+            <td>(0.5625, 0.9990)</td>
+        </tr>
+        <tr>
+            <td>CCPBA</td>
+            <td>(0.4987, 0.9973)</td>
+            <td>(0.2165, 0.9563)</td>
+            <td>-</td>
+            <td>-</td>
+        </tr>
+    </tbody>
+</table>
+
+<p class="body">
+  <strong><b>Table 1:</b></strong> Results for the risk of collision estimation error of DIAMETER, RADIUS, and the Cantelli Inequality when the obstacle location is represented by three types of probability distributions. Note that CCPBA can only handle Gaussian distributions, so does not have results for the other types of distributions.
+</p>
+
+</p>
+<!--
+
+
         <p class="body" style="padding-bottom: 0pt">RADIUS is compared to DIAMETER and is shown to outperform it in a variety of left-turning scenarios. <font color="red"> TODO do we have other left turning method results? Single zono stuff maybe? </font>
         </p>
+
+-->
+
+
 <!-- 
         <h2 class="section_title" style="font-size: 15pt; padding-top: 0pt;">3-Lane Highway Simulations </h2>
         <p class="body">RADIUS is compared to <a href="https://arxiv.org/pdf/2211.11997.pdf">REFINE</a>, <a href="https://deepblue.lib.umich.edu/handle/2027.42/169729">CCPBA</a> and <a href="https://arxiv.org/pdf/2002.10999.pdf">Cantelli MPC</a> in a 1000m long, 3-lane highway simulation where the goal is to be able to navgate through the dense traffic and reach the end of the highway.
@@ -349,6 +447,8 @@
                 <source src="./web_elements/Risk_multi.mp4" type="video/mp4">
             </video>
         </div> -->
+
+        <!--
         <h2 class="section_title" style="font-size: 15pt;">Left Turning experiments </h2>
         <p class="body">
         <font color="red"> TODO should these be direct comparisons to RADIUS as well, or just DIAMETER videos? [Currently these are RADIUS videos] </font> 
@@ -362,6 +462,13 @@
                 <source src="./web_elements/Leftturning_website.mp4" type="video/mp4">
             </video>
         </div>
+        -->
+
+
+
+
+
+
         <!--
           <h2 class="section_title" style="font-size: 15pt;">Hardware Lane Change Experiments </h2>
           <p class="body">
@@ -387,19 +494,8 @@
     </div>
 
     <!-- Citation -->
-<font color="red">
-    <h2 class="section_title"> <font color="red"> Citation </font> </h2>
+    <h2 class="section_title"> Citation </h2>
     <ul class="body" style="padding-left:50pt; font-size: 10pt; line-height: 15pt;">
-        <li>RADIUS was developed in <a href="http://www.roahmlab.com">Robotics and Optimization for Analysis of Human Motion (ROAHM) Lab</a> at University of Michigan - Ann Arbor.</li>
-        <ul style="padding-left:0"><div style="background-color:#e6e6e6;">
-            <p class="body" style="padding-left:0pt; font-size: 10pt;padding-bottom:0;text-indent:-3rem;margin-left:4rem;font-family:monospace;line-height: 1.2rem;">  @article{9792203, <br>
-                author={Jinsun Liu and Challen Enninful Adu and Lucas Lymburner and Vishrut Kaushik and Lena Trang and Ram Vasudevan}, <br>
-                journal={Robotics, Science and Systems 2023}, <br>
-                title={RADIUS: Risk-Aware, Real-Time, Reachability-Based Motion Planning}, <br>
-                year={2023}, <br>
-                doi={https://doi.org/10.48550/arXiv.2302.07933}}</p>
-        </div></li>
-    </ul>
-</font>
+        <li>DIAMETER was developed in <a href="http://www.roahmlab.com">Robotics and Optimization for Analysis of Human Motion (ROAHM) Lab</a> at University of Michigan - Ann Arbor.</li>
 </body>
 </html>
